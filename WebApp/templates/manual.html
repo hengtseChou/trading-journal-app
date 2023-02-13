@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+
+{%block title %} 說明 - 交易簿 app {% endblock title %}
+
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-8 offset-2 my-3">
+      <h2 class="my-3">簡介</h2>
+      <hr>
+      <div class="mb-4">
+        <p>本網頁應用程式為一個股票管理 app，紀錄並整合顯示所有的持股狀況，其特色如下：</p>
+        <ul>
+          <li><p>可登記<strong>「買進」</strong>、<strong>「賣出」</strong>或<strong>「股利發放」</strong>，並可選擇<strong>「是否為當沖」。</strong></p>
+          </li>
+          <li><p>基於<strong>「先進先出」</strong>規則，並依此計算已實現、未實現損益及各損益率，儀表板形式顯示。</p>
+          </li>
+          <li><p>支援<strong>「子帳戶」</strong>功能，方便使用者合併或分別檢視各個帳戶中的持股狀況。</p>
+          </li>
+          <li><p>可下載交易紀錄或庫存股資料，做進一步資料分析。</p>
+          </li>
+        </ul>
+      </div>
+      <h2 class="my-3">注意事項</h2>
+      <hr>
+      <div class="mb-4">
+        <ul>
+          <li><p>請一次僅以一個裝置登入，避免重複讀/寫</p>
+          </li>
+          <li><p>本程式目前僅支援台股上市櫃股票，並以證交所及櫃買中心之最新收盤價當作資料來源。</p>
+          </li>
+          <li><p>若要確保資料確實上傳，請確保按存檔按鈕，待系統跳出存檔成功訊息，再行登出。</p>
+          </li>
+        </ul>
+      </div>
+      <h2 class="my-3">帳號/子帳戶設定</h2>
+      <hr>
+      <h3 class="mt-4 mb-3">建立帳戶</h3>
+      <ul>
+        <li><p>在<a href="https://janjerry-trading2.onrender.com/register">創建帳戶</a>中，使用者可以輸入任意中英文作為使用者名稱，並設定初始本金。若券商有提供交易手續費折扣，亦可在此做初步設定。建立好的帳號同時會作為第一個子帳號。</p>
+        </li>
+      </ul>      
+      <h3 class="mt-4 mb-3">子帳戶設定</h3>
+      <ul>
+        <li><p>若需要新增子帳戶，或是更改子帳戶的本金、手續費折數，可以到設定頁面中去設定（登入後才可使用）。</p>
+        </li>
+        <li><p>也可刪除子帳戶，或更改子帳戶的名稱。</p>
+        </li>
+      </ul>              
+    </div>
+  </div>
+</div>
+
+{% endblock %}

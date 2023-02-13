@@ -1,0 +1,37 @@
+.btn-color {
+  background-color: #2c3443;
+  color: #fff;    
+}
+
+.btn-color2 {
+  background-color: #fff;
+  color: #2c3443;    
+}
+
+.profile-image-pic{
+  height: 200px;
+  width: 200px;
+  object-fit: cover;
+}
+    
+.cardbody-color{
+  background-color: #ebf2fa;
+}
+  
+.mb-n2 {
+  margin-bottom: -2rem;
+}
+
+.ms-pw {
+  margin-left: 5rem;
+}
+
+.table-responsive {
+  overflow: inherit;
+}
+
+@media (max-width: 767px) {  
+  .mb-n2 {
+    margin-bottom: 0rem;
+  }
+}

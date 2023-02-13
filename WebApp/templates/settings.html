@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+
+{%block title %} 設定 - 交易簿 app {% endblock title %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <h2 class="fw-bold text-dark mt-5 mb-4">帳戶設定</h2>
+        <!-- tab list -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="sub-acc-tab" data-bs-toggle="tab" data-bs-target="#sub-acc" type="button" role="tab" aria-selected="true">子帳戶設定</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pw-tab" data-bs-toggle="tab" data-bs-target="#pw" type="button" role="tab" aria-selected="false">更改密碼</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="username-tab" data-bs-toggle="tab" data-bs-target="#username" type="button" role="tab" aria-selected="false">更改用戶名</button>
+          </li>
+        </ul>
+        <!-- sub account tab -->
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="sub-acc" role="tabpanel" aria-labelledby="sub-acc-tab">            
+            <div class="row">
+              <div class="col-5">
+                <h5 class="fw-bold mb-3 mt-4">新增子帳戶</h5>
+                <form method="post" autocomplete="off">
+                  <div class="d-flex">
+                    <input type="text" 
+                      class="form-control w-75 mb-3" 
+                      name="sub_acc_name" 
+                      id="sub_acc_name"
+                      placeholder="名稱">            
+                  </div>
+                  <div class="d-flex">            
+                    <input type="text" 
+                      class="form-control w-75 mb-3" 
+                      name="sub_acc_rate" 
+                      id="sub_acc_rate"
+                      placeholder="手續費折數(0~1)">
+                  </div>
+                  <div class="d-flex">            
+                    <input type="text" 
+                      class="form-control w-75 mb-3" 
+                      name="sub_acc_principal" 
+                      id="sub_acc_principal"
+                      placeholder="本金">
+                  </div>
+                  <div class="d-flex mb-3">
+                    <button type="submit" class="btn btn-color w-75" id="new_sub_acc" name="new_sub_acc" value="new_sub_acc">新增</button>
+                  </div>
+                </form>
+              </div>
+              <div class="col-7">
+                <h5 class="fw-bold mb-3 mt-4">現有子帳戶</h5>
+                <div class="table-responsive">
+                  <table class="table align-middle" >
+                    <thead>
+                      <tr>
+                        <th>名稱</th>
+                        <th class="text-center">折數</th>
+                        <th class="text-center">本金</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for acc, item in sub_account.items() %}
+                      <tr>
+                        <td>{{ acc }}</td>
+                        <td>{{ item[0] }}</td>
+                        <td>
+                          <div class='nums'>{{ item[1] }}</div>
+                        </td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="bi bi-gear-wide-connected"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                              <li><a class="dropdown-item" data-bs-toggle="modal" href="#change_rate_{{ acc }}">修改折數</a></li>
+                              <li><a class="dropdown-item" data-bs-toggle="modal" href="#change_principal_{{ acc }}">修改本金</a></li>
+                              <li><a class="dropdown-item" data-bs-toggle="modal" href="#change_sub_acc_name_{{ acc }}">變更名稱</a></li>
+                              <li><a class="dropdown-item" data-bs-toggle="modal" href="#delete_{{ acc }}_modal">刪除</a></li>
+                            </ul>
+                          </div>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>                
+              </div>
+            </div>            
+          </div>
+          <!-- password tab -->
+          <div class="tab-pane fade show" id="pw" role="tabpanel" aria-labelledby="pw-tab">
+            <form method="POST" autocomplete="off">
+              <h5 class="fw-bold mb-3 mt-4 ms-pw">變更密碼</h5>
+              <p class="d-flex ms-pw">新密碼需至少為8個字元，並混合大小寫字母、數字</p>
+              <div class="d-flex ms-pw">
+                <input type="password" 
+                  class="form-control w-75 mb-3" 
+                  name="old_password" 
+                  id="old_password"
+                  placeholder="舊密碼">            
+              </div>
+              <div class="d-flex ms-pw">            
+                <input type="password" 
+                  class="form-control w-75 mb-3" 
+                  name="new_password" 
+                  id="new_password"
+                  placeholder="新密碼">
+              </div>
+              <div class="d-flex ms-pw">
+                <input type="password" 
+                  class="form-control w-75 mb-3" 
+                  name="new_password_confirm" 
+                  id="new_password_confirm"
+                  placeholder="再次輸入新密碼">
+              </div>
+              <div class=" d-flex mt-3 ms-pw">
+                <button type="submit" 
+                  class="btn btn-color w-75" 
+                  id="pw_change" 
+                  name="pw_change" 
+                  value="pw_change">更改
+                </button>
+              </div>
+            </form>
+          </div>
+          <!-- username tab -->
+          <div class="tab-pane fade show" id="username" role="tabpanel" aria-labelledby="pw-tab">
+            <form method="POST" autocomplete="off">
+              <h5 class="fw-bold mb-3 mt-4 ms-pw">變更用戶名</h5>
+              <p class="d-flex ms-pw">新用戶名不得與現有的用戶名重複</p>
+              <div class="d-flex ms-pw">
+                <input type="text" 
+                  class="form-control w-75 mb-3" 
+                  name="new_username" 
+                  placeholder="{{ username }}">            
+              </div>
+              <div class=" d-flex mt-3 ms-pw">
+                <button type="submit" 
+                  class="btn btn-color w-75" 
+                  name="username_change" 
+                  value="username_change">更改
+                </button>
+              </div>
+            </form>
+          </div>
+          <!-- end tab -->
+        </div>        
+    </div>
+  </div>
+</div>
+
+{% for acc, value in sub_account.items() %}
+<div class="modal fade" id="change_rate_{{ acc }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content w-75">
+      <form method="post" autocomplete="off">
+        <div class="modal-header">
+          <h5 class="modal-title">更改 {{ acc }} 的手續費折數</h5>
+          <button type="button" class="btn-close"  data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <p>輸入新手續費折數(0~1)</p>
+          <div class="form-outline mb-4">
+            <input type="text" id="new_rate" name='new_rate' class="form-control mb-2" placeholder="{{ value[0] }}"/>
+            <input type="hidden" id="new_rate_acc" name='new_rate_acc' value="{{ acc }}" />
+            <button type="submit" 
+              class="btn btn-color w-100 my-2" 
+              id="send_new_rate" 
+              name="send_new_rate" 
+              value="send_new_rate">送出
+            </button>
+          </div>
+        </div>        
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="change_principal_{{ acc }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content w-75">
+      <form method="post" autocomplete="off">
+        <div class="modal-header">
+          <h5 class="modal-title">更改 {{ acc }} 的起始本金</h5>
+          <button type="button" class="btn-close"  data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <p>輸入新本金</p>
+          <div class="form-outline mb-4">
+            <input type="text" id="new_principal" name='new_principal' class="form-control mb-2" placeholder="{{ value[1] }}"/>
+            <input type="hidden" id="new_principal_acc" name='new_principal_acc' value="{{ acc }}" />
+            <button type="submit" 
+              class="btn btn-color w-100 my-2" 
+              id="send_new_principal" 
+              name="send_new_principal" 
+              value="send_new_principal">送出
+            </button>
+          </div>
+        </div>        
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="change_sub_acc_name_{{ acc }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content w-75">
+      <form method="post" autocomplete="off">
+        <div class="modal-header">
+          <h5 class="modal-title">變更 {{ acc }} 的名稱</h5>
+          <button type="button" class="btn-close"  data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <p class="mb-3">請輸入欲更改的新名稱。注意不可與現有的子帳號名稱重複。</p>
+          <div class="form-outline mb-4">
+            <input type="text" id="new_name" name='new_name' class="form-control mb-2" placeholder="{{ acc }}"/>
+            <input type="hidden" id="new_name_acc" name='new_name_acc' value="{{ acc }}" />
+            <button type="submit" 
+            class="btn btn-color w-100 my-2" 
+            id="send_new_name" 
+            name="send_new_name" 
+            value="send_new_name">送出</button>
+          </div>
+        </div>
+      </form> 
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="delete_{{ acc }}_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content w-75">
+      <form method="post" autocomplete="off">
+        <div class="modal-header">
+          <h5 class="modal-title">刪除子帳戶"{{ acc }}"</h5>
+          <button type="button" class="btn-close"  data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <p class="mb-3">此動作會一併刪除與此子帳戶有關的交易紀錄，確定刪除？（刪除後將無法回復！）</p>
+          <div class="form-outline mb-4">            
+            <input type="hidden" id="delete_acc" name='delete_acc' value="{{ acc }}" />
+            <button type="submit" 
+            class="btn btn-color w-100 " 
+            id="send_deletion" 
+            name="send_deletion" 
+            value="send_deletion">送出</button>
+          </div>
+        </div>
+      </form> 
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block script %}
+<script>
+
+if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
+}
+
+function num_format() {
+
+  const nums_elements = document.getElementsByClassName('nums');
+  for (let i = 0; i < nums_elements.length; i++) {
+    nums_elements[i].textContent = Number(nums_elements[i].textContent).toLocaleString();
+  }
+}
+
+
+window.onload = function() {
+  num_format();
+}
+
+</script>
+{% endblock %}

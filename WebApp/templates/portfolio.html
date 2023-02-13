@@ -1,0 +1,603 @@
+{% extends 'base.html' %}
+
+{%block title %} 總損益表 - 交易簿 app {% endblock title %}
+
+{% block content %}
+
+<div class="container">
+  <h2 class="mt-5">損益試算</h2>
+  <hr>
+  <div class="row">
+    <div class="col-md-3">
+      <h5 class="my-3">
+        <i class="bi bi-info-circle"></i>
+        目前登入的身分為 "{{ username }}"</h5>
+      <div class="mt-3">
+        資料來源: 
+        <a class="text-reset" href="https://www.twse.com.tw/zh/page/trading/exchange/STOCK_DAY.html">證交所</a>
+        及
+        <a class="text-reset" href="https://finmindtrade.com/analysis/#/data/api">FinMind API</a>
+      </div>
+      <p>價格為最新收盤價</p>
+    </div>    
+    <div class="col-md-9">
+      <ul class="nav nav-tabs"  role="tablist">        
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="combined-tab" data-bs-toggle="tab" data-bs-target="#combined" type="button" role="tab" aria-selected="false">合併檢視</button>
+        </li>
+        {% for acc in stats[0].keys() %}
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="{{ acc }}-tab1" data-bs-toggle="tab" data-bs-target="#{{ acc }}-1" type="button" role="tab" aria-selected="true">{{ acc }}</button>
+        </li>
+        {% endfor %}
+      </ul>
+      <div class="tab-content">        
+        <div class="tab-pane fade show active" id="combined" role="tabpanel" aria-labelledby="combined-tab">
+          <div class="row mt-2">
+            <div class="col-md-4">
+              <div class="card my-2">
+                <div class="card-body">
+                  <h5 class="fw-bold">未實現損益</h5>
+                  <hr>
+                  <div class="my-2">
+                    <p class="color_nums">{{ stats[1]['unrealized_gain'] }}</p>
+                  </div>
+                </div>
+              </div>              
+            </div>
+            <div class="col-md-4">
+              <div class="card my-2">
+                <div class="card-body">
+                  <h5 class="fw-bold">已實現損益</h5>
+                  <hr>
+                  <div class="my-2">
+                    <p class="color_nums">{{ stats[1]['realized_gain'] }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+          <div class="row">
+            <div class="col-md-8">
+              <hr>
+            </div>
+          </div>
+          <div class="row">            
+            <div class="col-md-4">
+              <div class="card my-2">
+                <div class="card-body">
+                  <h5 class="fw-bold">總損益</h5>
+                  <hr>
+                  <div class="my-2">
+                    <p class="color_nums">{{ stats[1]['all_gain'] }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card my-2">
+                <div class="card-body">
+                  <h5 class="fw-bold">總損益率</h5>
+                  <hr>
+                  <div class="my-2">
+                    <p class="pers">{{ stats[1]['all_gain_ror'] }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>          
+          </div>
+        </div> <!-- tab2 -->
+        {% for acc, dict in stats[0].items() %}
+        <div class="tab-pane fade" id="{{ acc }}-1" role="tabpanel">
+          <div class="row mt-2">
+            <div class="col-md-4">
+              <div class="card my-2">
+                <div class="card-body">
+                  <h5 class="fw-bold">未實現損益</h5>
+                  <hr>
+                  <div class="my-2">
+                    <p class="color_nums">{{ dict['unrealized_gain'] }}</p>
+                  </div>
+                </div>
+              </div>                
+            </div>
+            <div class="col-md-4">
+              <div class="card my-2">
+                <div class="card-body">
+                  <h5 class="fw-bold">已實現損益</h5>
+                  <hr>
+                  <div class="my-2">
+                    <p class="color_nums">{{ dict['realized_gain'] }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+                                     
+          </div>
+          <div class="row">
+            <div class="col-md-8">
+              <hr>
+            </div>
+          </div>
+          <div class="row">
+            
+            <div class="col-md-4">
+              <div class="card my-2">
+                <div class="card-body">
+                  <h5 class="fw-bold">總損益</h5>
+                  <hr>
+                  <div class="my-2">
+                    <p class="color_nums">{{ dict['all_gain'] }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card my-2">
+                <div class="card-body">
+                  <h5 class="fw-bold">總損益率</h5>
+                  <hr>
+                  <div class="my-2">
+                    <p class="pers">{{ dict['all_gain_ror'] }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>            
+          </div>
+        </div>
+        {% endfor %}  <!-- tab1 -->
+      </div>
+    </div>     
+  </div>
+</div>
+
+<div class="container">
+  <h2 class="mt-5">子帳戶庫存狀況</h2>
+  <hr>  
+  <ul class="nav nav-tabs"  role="tablist">  
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="combined-tab2" data-bs-toggle="tab" data-bs-target="#combined-2" type="button" role="tab" aria-selected="true">合併檢視</button>
+    </li>      
+    {% for acc in portfolio[1].keys() %}
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="{{ acc }}-tab2" data-bs-toggle="tab" data-bs-target="#{{ acc }}-2" type="button" role="tab" aria-selected="true">{{ acc }}</button>
+    </li>
+    {% endfor %}
+  </ul>  
+  <div class="tab-content" >
+    <div class="tab-pane fade show active" id="combined-2" role="tabpanel">
+      <div class="table-responsive">
+        <table class="table table-striped" 
+              data-toggle="table" 
+              data-pagination="true" 
+              data-search="true"               
+              data-search-align="left"
+              data-show-columns="true">
+          <thead>
+            <tr>
+              <th data-searchable="true" data-sortable="true">代碼</th>
+              <th data-searchable="true" data-sortable="true">公司名稱</th>
+              <th data-align="right">現價</th>
+              <th data-align="right">買入均價</th>
+              <th data-align="right">調整成本均價</th>  
+              <th data-align="right" data-formatter="number_formatter">持有數量(張)</th>
+              <th data-align="right" data-formatter="number_formatter">持有成本</th>
+              <th data-align="right" data-formatter="number_formatter">市值</th> 
+              <th data-align="right" data-formatter="number_formatter">預估收入</th> 
+              <th data-align="right" data-formatter="colorformat">未實現損益</th>
+              <th data-align="right" data-formatter="colorformat_per">未實現損益率</th>
+              <th data-align="right" data-formatter="per" data-sortable="true">佔比</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for index, row in portfolio[0].iterrows() %}
+            <tr> 
+              <td>{{row['code']}}</td>
+              <td>{{row['name']}}</td>
+              <td>{{row['now_price']}}</td>
+              <td>{{row['avg_buy_price_in_stock']}}</td>
+              <td>{{row['avg_buy_price_adjusted']}}</td>
+              <td>{{row['holding_shares']}}</td>
+              <td>{{row['in_stock_cost_adjusted']}}</td>
+              <td>{{row['market_value']}}</td>
+              <td>{{row['expected_income']}}</td>
+              <td>{{row['unrealized_gain']}}</td>
+              <td>{{row['unrealized_gain_per']}}</td>
+              <td>{{row['proportion']}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>      
+        </table>
+      </div>
+    </div>
+    {% for acc, df in portfolio[1].items() %}        
+    <div class="tab-pane fade show" id="{{ acc }}-2" role="tabpanel">
+      <div class="table-responsive">
+        <table class="table table-striped" 
+              data-toggle="table" 
+              data-pagination="true" 
+              data-search="true"               
+              data-search-align="left"
+              data-show-columns="true">
+          <thead>
+            <tr>
+              <th data-searchable="true" data-sortable="true">代碼</th>
+              <th data-searchable="true" data-sortable="true">公司名稱</th>
+              <th data-align="right">現價</th>
+              <th data-align="right">買入均價</th>
+              <th data-align="right">調整成本均價</th>  
+              <th data-align="right" data-formatter="number_formatter">持有數量(張)</th>
+              <th data-align="right" data-formatter="number_formatter">持有成本</th>
+              <th data-align="right" data-formatter="number_formatter">市值</th> 
+              <th data-align="right" data-formatter="number_formatter">預估收入</th> 
+              <th data-align="right" data-formatter="colorformat">未實現損益</th>
+              <th data-align="right" data-formatter="colorformat_per">未實現損益率</th>
+              <th data-align="right" data-formatter="per" data-sortable="true">佔比</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for index, row in df.iterrows() %}
+            <tr> 
+              <td>{{row['code']}}</td>
+              <td>{{row['name']}}</td>
+              <td>{{row['now_price']}}</td>
+              <td>{{row['avg_buy_price_in_stock']}}</td>
+              <td>{{row['avg_buy_price_adjusted']}}</td>
+              <td>{{row['holding_shares']}}</td>
+              <td>{{row['in_stock_cost_adjusted']}}</td>
+              <td>{{row['market_value']}}</td>
+              <td>{{row['expected_income']}}</td>
+              <td>{{row['unrealized_gain']}}</td>
+              <td>{{row['unrealized_gain_per']}}</td>
+              <td>{{row['proportion']}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>      
+        </table>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="container">
+  <h2 class="mt-5">區間查詢</h2>
+  <hr>
+  <div class="row">
+    <form class="col-md-2 text-center mb-3" method="post">
+      <button class="btn btn-color2 w-100 shadow mt-4 mb-2" name='this_month' type="submit" value="this_month">本月</button>
+      <button class="btn btn-color2 w-100 shadow my-2" name='last_month' type="submit" value="last_month">上個月</button>
+      <button class="btn btn-color2 w-100 shadow my-2" name='custom' type="button" onclick="show_time_select()">自訂範圍</button>
+      <div class="input-group time-select my-3" style="display: none;">
+        <span class="input-group-text">開始日期</span>
+        <input class="form-control" id="start_date" name='start_date' type="date">
+      </div>
+      <div class="input-group time-select my-3" style="display: none;">
+        <span class="input-group-text">截止日期</span>
+        <input class="form-control" id="end_date" name='end_date' type="date">
+      </div>
+      <button class="btn btn-color time-select w-100 shadow my-2 text-center" type="submit" name="custom" value="custom" style="display: none;">送出</button>
+    </form>
+    <div class="col-md-10">
+      <ul class="nav nav-tabs" role="tablist">        
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="combined-tab" data-bs-toggle="tab" data-bs-target="#time_combined" type="button" role="tab" aria-selected="false">合併檢視</button>
+        </li>
+        {% for acc in time_select[0].keys() %}
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="{{ acc }}-tab3" data-bs-toggle="tab" data-bs-target="#{{ acc }}-3" type="button" role="tab" aria-selected="false">{{ acc }}</button>
+        </li>
+        {% endfor %}
+      </ul>
+      <div class="tab-content">        
+        <div class="tab-pane fade show active" id="time_combined" role="tabpanel" aria-labelledby="combined-tab">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="card my-2">
+                <div class="card-body">
+                  <h5 class="fw-bold"> 已實現</h5>
+                  <hr>
+                  <div class="my-2">
+                    <p class="color_nums">{{ time_select[2] }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card my-2">
+                <div class="card-body">
+                  <h5 class="fw-bold"> 損益率</h5>
+                  <hr>
+                  <div class="my-2">
+                    <p class="pers">{{ time_select[3] }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-2 mb-n2">（期間損益率 = 已實現損益加總 / 持有成本加總）</div>          
+          <div class="table-responsive">
+            <table class="table table-striped" 
+                   data-toggle="table" 
+                   data-pagination="true"
+                   data-show-columns="true">
+              <thead>
+                <tr>
+                  <th data-searchable="true" data-sortable="true">日期</th>
+                  <th data-searchable="true" data-sortable="true">子帳戶</th>
+                  <th data-searchable="true" data-sortable="true">代碼</th>
+                  <th data-searchable="true">公司名稱</th>
+                  <th data-align="right">當沖</th>
+                  <th data-align="right" data-formatter="number_formatter">賣(張)</th>
+                  <th data-align="right" data-formatter="number_formatter_no_rounding">價格</th>
+                  <th data-align="right" data-visible="false" data-formatter="number_formatter">手續費</th>
+                  <th data-align="right" data-visible="false" data-formatter="number_formatter">交易稅</th>
+                  <th data-align="right" data-visible="false" data-formatter="number_formatter">交易成本</th>
+                  <th data-align="right" data-visible="false" data-formatter="number_formatter">價金</th>
+                  <th data-align="right" data-formatter="number_formatter">收入</th>
+                  <th data-align="right" data-formatter="number_formatter">持有成本</th>
+                  <th data-align="right" data-formatter="colorformat">已實現損益</th>
+                  <th data-align="right" data-formatter="colorformat_per">獲益率</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for index, row in time_select[1].iterrows() %}
+                <tr> 
+                  <td>{{row['date']}}</td>
+                  <td>{{row['sub_account']}}</td>
+                  <td>{{row['code']}}</td>
+                  <td>{{row['name']}}</td>
+                  <td>{{row['is_day_trade']}}</td>             
+                  <td>{{row['sell']}}</td>
+                  <td>{{row['price']}}</td>
+                  <td>{{row['discounted_fee']}}</td>
+                  <td>{{row['tax']}}</td>
+                  <td>{{row['transaction_cost']}}</td>
+                  <td>{{row['deal']}}</td>
+                  <td>{{row['income']}}</td>
+                  <td>{{row['holding_cost']}}</td>
+                  <td>{{row['realized_gain']}}</td>
+                  <td>{{row['rate_of_return']}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>      
+            </table>
+          </div>
+        </div>
+        <!-- tab for -->
+        {% for acc, data in time_select[0].items() %}
+        <div class="tab-pane fade" id="{{ acc }}-3" role="tabpanel">         
+          <div class="row">            
+            <div class="col-md-3">
+              <div class="card my-2">
+                <div class="card-body">
+                  <h5 class="fw-bold">已實現</h5>
+                  <hr>
+                  <div class="my-2">
+                    <p class="color_nums">{{ data[1] }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card my-2">
+                <div class="card-body">
+                  <h5 class="fw-bold">損益率</h5>
+                  <hr>
+                  <div class="my-2">
+                    <p class="pers">{{ data[2] }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 mb-n2">（期間損益率 = 已實現損益加總 / 持有成本加總）</div>
+          </div>          
+          <div class="table-responsive">
+            <table class="table table-striped" 
+                  data-toggle="table" 
+                  data-show-columns="true">
+              <thead>
+                <tr>
+                  <th data-fiend="date" data-searchable="true" data-sortable="true">日期</th>
+                  <th data-fiend="code" data-searchable="true" data-sortable="true">代碼</th>
+                  <th data-fiend="name" data-searchable="true">公司名稱</th>
+                  <th data-fiend="type" data-searchable="true" data-visible="false">類型</th>
+                  <th data-fiend="sell" data-align="right" data-formatter="number_formatter">賣(張)</th>
+                  <th data-fiend="price" data-align="right" data-formatter="number_formatter_no_rounding">價格</th>
+                  <th data-fiend="fee" data-align="right" data-visible="false" data-formatter="number_formatter">手續費</th>
+                  <th data-fiend="tax" data-align="right" data-visible="false" data-formatter="number_formatter">交易稅</th>
+                  <th data-fiend="cost" data-align="right" data-visible="false" data-formatter="number_formatter">交易成本</th>
+                  <th data-fiend="deal" data-align="right" data-formatter="number_formatter">價金</th>
+                  <th data-fiend="income" data-align="right" data-formatter="number_formatter">收入</th>
+                  <th data-fiend="gain" data-align="right" data-formatter="colorformat">已實現損益</th>
+                  <th data-fiend="gain" data-align="right" data-formatter="number_formatter">持有成本</th>
+                  <th data-fiend="gain" data-align="right" data-formatter="colorformat_per">獲益率</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for index, row in data[0].iterrows() %}
+                <tr> 
+                  <td>{{row['date']}}</td>
+                  <td>{{row['code']}}</td>
+                  <td>{{row['name']}}</td>
+                  <td>{{row['type']}}</td>
+                  <td>{{row['sell']}}</td>
+                  <td>{{row['price']}}</td>
+                  <td>{{row['discounted_fee']}}</td>
+                  <td>{{row['tax']}}</td>
+                  <td>{{row['transaction_cost']}}</td>
+                  <td>{{row['deal']}}</td>
+                  <td>{{row['income']}}</td>
+                  <td>{{row['realized_gain']}}</td>
+                  <td>{{row['holding_cost']}}</td>
+                  <td>{{row['rate_of_return']}}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>      
+            </table>
+          </div>          
+        </div>
+        {% endfor %}
+        <!-- tab for  -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <h2 class="mt-3">其他功能</h2>
+  <hr>
+  <div class="row mb-5">
+    <div class="col-md-3 mb-4" style="min-width: 20em;">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="fw-bold">庫存資料下載</h5>
+          <hr>
+          <div class="mt-3 mb-2">
+            <a type="button" class="btn btn-color w-50 shadow" name="dl_portfolio" id="dl_portfolio" href="/download-portfolio">下載 .xlsx 檔</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-4" style="min-width: 20em;">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="fw-bold">已實現資料下載</h5>
+          <hr>
+          <div class="mt-3 mb-2">
+            <a type="button" class="btn btn-color w-50 shadow" name="dl_realized" id="dl_realized" href="/download-realized">下載 .xlsx 檔</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4" style="min-width: 27em;">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="fw-bold">請在日期來到新的季度後，再進行季結算</h5>
+          <hr>
+          <div class="mt-3 mb-2">
+            <a type="button" class="btn btn-color w-50 shadow" name="settle_btn" id="settle_btn" href="/quarterly-settlement">季結算</a>
+          </div>
+        </div>
+      </div>
+    </div>   
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+
+// prevent re-submitting form when refresh or hit previous page
+if ( window.history.replaceState ) {
+    window.history.replaceState( null, null, window.location.href );
+}
+
+function colorformat(value) {
+  let color;
+  if (value > 0) {
+    color = '#ff0000'
+  } else if (value < 0) {
+    color = '#29ab0c'
+  } else {
+    color = '#000000'
+  }
+    
+  return '<div style="color: ' + color + '">' +
+    Math.round(Number(value)).toLocaleString() +
+    '</div>'
+}
+
+function colorformat_per(value) {
+  let color;
+  if (value > 0) {
+    color = '#ff0000'
+  } else if (value < 0) {
+    color = '#29ab0c'
+  } else {
+    color = '#000000'
+  }
+    
+  return '<div style="color: ' + color + '">' +
+      value + '%'
+      '</div>'
+}
+
+function per(value) {
+  return value + '%'
+}
+
+function number_formatter(value) {
+  return Math.round(Number(value)).toLocaleString()
+}
+
+function number_formatter_no_rounding(value) {
+  return Number(value).toLocaleString()
+}
+
+function dashboard_format() {
+
+  const nums_elements = document.getElementsByClassName('nums');
+  for (let i = 0; i < nums_elements.length; i++) {
+    nums_elements[i].textContent = Number(nums_elements[i].textContent).toLocaleString();
+  }
+
+  const pers_elements = document.getElementsByClassName('pers');
+  for (let i = 0; i < pers_elements.length; i++) {    
+    let value = pers_elements[i].textContent;
+    if (!isNaN(value)) {
+      let color;
+      value = Number(value);
+      if (value > 0) {
+        color = '#ff0000';
+      } else if (value < 0) {
+        color = '#29ab0c';
+      } else {
+        color = '#000000';
+      }
+      pers_elements[i].textContent = value.toString() + '%';
+      pers_elements[i].style.color = color;
+    } else {
+      pers_elements[i].textContent = '-'
+    }    
+  }
+
+  const color_nums_elements = document.getElementsByClassName('color_nums');
+  for (let i = 0; i < color_nums_elements.length; i++) {
+    let value = Number(color_nums_elements[i].textContent);
+    let color;
+    if (value > 0) {
+      color = '#ff0000';
+    } else if (value < 0) {
+      color = '#29ab0c';
+    } else {
+      color = '#000000';
+    }
+    color_nums_elements[i].textContent = value.toLocaleString();
+    color_nums_elements[i].style.color = color;
+  }
+}
+
+
+
+window.onload = function() {
+  dashboard_format();
+}
+
+function show_time_select() {
+  const elements = document.getElementsByClassName('time-select');
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].style.display = 'flex';
+    if (i == 2) {
+      elements[i].style.display = 'inherit';
+    }
+  }
+
+}
+
+</script>
+{% endblock %}

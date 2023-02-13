@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{%block title %} 創建帳戶 - 交易簿 app {% endblock title %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <h2 class="text-center text-dark mt-5">創建帳戶</h2>
+        <div class="card my-5  rounded-4">
+          <form class="card-body cardbody-color p-lg-5 rounded-4" method="POST" autocomplete="off">
+            <p>請輸入下列資訊以建立帳戶</p>
+            <div class="mb-3">
+              <input type="text" class="form-control" 
+                id="Username" name="Username" placeholder="用戶名">
+            </div>
+            <div class="mb-3">
+              <input type="password" class="form-control" 
+                id="password" name="password" placeholder="密碼(長度至少為8個字元，並混合大小寫字母、數字)">
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" 
+                id="discount_rate" name="discount_rate" placeholder="手續費折數(0~1)">
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" 
+                id="principal" name="principal" placeholder="本金">
+            </div>
+            <div class="text-center"><button type="submit" class="btn btn-color px-5 mb-5 w-100 shadow">建立</button></div>
+            <div class="form-text text-center mb-5">
+              <a href="/login" class="text-dark fw-bold"> 或點此登入現有帳戶</a>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+  if ( window.history.replaceState ) {
+          window.history.replaceState( null, null, window.location.href );
+      }
+
+</script>
+{% endblock %}

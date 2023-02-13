@@ -1,0 +1,403 @@
+{% extends 'base.html' %}
+
+{%block title %} 交易紀錄 - 交易簿 app {% endblock title %}
+
+{% block content %}
+
+<div class="container">
+    <h2 class="text-dark mt-5">新增交易紀錄</h2>
+    <hr>
+      <h5 class="my-3">
+        <i class="bi bi-info-circle"></i>
+        目前登入的身分為 "{{ username }}"</h5>
+      <div class="card cardbody-color my-3 rounded-1">
+        <h4 class="card-title text-dark ms-4 mt-4">買/賣股票</h4>
+        <div class="card-body rounded-1">
+          <form class="container" method="POST" autocomplete="off">
+            <div class="row mt-1">
+              <div class="col-md-9">
+                <div class="row">
+                  <div class="col-md-3 mb-3">
+                    <select class="form-select" id="sub_account" name='sub_account'>
+                      {% for key  in sub_account.keys() %}
+                      <option value='{{ key }}'>{{ key }}</option>
+                      {% endfor %}
+                    </select> 
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <div class="input-group">
+                      <span class="input-group-text">日期</span>
+                      <input class="form-control" id="date" name='date' type="date">
+                    </div>                    
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <input class="form-control" type="text" id="stockcode" name='stockcode' placeholder="股票代碼">
+                  </div>                  
+                  <div class="col-md-3 mb-3">
+                    <select class="form-select" id="day_trade" name="day_trade">
+                      <option value="day_trade_false">非當沖</option>
+                      <option value="day_trade_true">當沖</option>
+                    </select>
+                  </div>                                    
+                </div>
+                <div class="row">
+                  <div class="col-md-3 mb-3">
+                    <select class="form-select" id="type" name="type">
+                      <option value="">選擇買/賣</option>
+                      <option value ='buy'>買</option>
+                      <option value="sell">賣</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <input class="form-control" id="shares" name='shares' placeholder="數量(張)">
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <input class="form-control" id="price" name='price' placeholder="價格">
+                  </div>                  
+                </div>              
+              </div>
+              <div class="col-md-2 mx-auto">
+                <button type="submit" class="btn btn-color btn-lg w-100 shadow" name="send_trade" value="send_trade">新增</button>
+              </div>
+            </div>
+            </form>
+            <hr>
+            <h4 class="card-title text-dark ms-2 mt-4 mb-3">股利發放</h4>
+            <form class="container" method="POST" autocomplete="off">
+              <div class="row mt-1">
+                <div class="col-md-9">
+                  <div class="row">
+                    <div class="col-md-3 mb-3">
+                      <select class="form-select" id="sub_account_div" name='sub_account_div'>
+                        {% for key in sub_account.keys() %}
+                        <option value='{{ key }}'>{{ key }}</option>
+                        {% endfor %}
+                      </select> 
+                    </div>
+                    <div class="col-md-3 mb-3">
+                      <div class="input-group">
+                        <span class="input-group-text">日期</span>
+                        <input class="form-control" id="date_div" name='date_div' type="date"/>
+                      </div>                      
+                    </div>
+                    <div class="col-md-3 mb-3">
+                      <input class="form-control" id="stockcode_div" name='stockcode_div' placeholder="股票代碼">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                      <input class="form-control" id="amount" name='amount' placeholder="金額(稅後)">
+                    </div>                    
+                  </div>                                
+                </div>
+                <div class="col-md-2 mx-auto">
+                  <button type="submit" class="btn btn-color btn-lg w-100 shadow" name="send_div" value="send_div">新增</button>
+                </div>
+              </div>
+              </form>
+          </div>
+        </div>
+  </div>
+
+<div class="container mt-5">
+  <div class="mb-3">
+    <h2 class="d-inline align-middle">交易歷程</h2>
+    <a class="btn btn-color d-inline mx-3 align-middle" type="button" href="/upload-current-records">存檔</a>
+  </div>
+  <hr>
+  <ul class="nav nav-tabs" id="myTab" role="tablist">    
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="combined-tab" data-bs-toggle="tab" data-bs-target="#combined" type="button" role="tab" aria-selected="false">合併檢視</button>
+    </li>
+    {% for acc in data[0].keys() %}
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="{{ acc }}-tab" data-bs-toggle="tab" data-bs-target="#{{ acc }}" type="button" role="tab" aria-selected="false">{{ acc }}</button>
+    </li>
+    {% endfor %}
+  </ul>
+  <div class="tab-content" id="myTabContent"> 
+    <div class="tab-pane fade show active" id="combined" role="tabpanel" aria-labelledby="combined-tab">
+      <div class="table-responsive">
+        <table class="table table-striped" 
+               data-toggle="table" 
+               data-pagination="true"
+               data-search="true" 
+               data-search-align="left"
+               data-show-columns="true">
+          <thead>
+            <tr>
+              <th data-searchable="true" data-sortable="true">日期</th>
+              <th data-searchable="true" data-sortable="true">子帳戶</th>
+              <th data-searchable="true" data-sortable="true">代碼</th>
+              <th data-searchable="true">公司名稱</th>
+              <th data-align="right">當沖</th>
+              <th data-searchable="true" data-visible="false">類型</th>
+              <th data-align="right" data-formatter="number_formatter">買(張)</th>
+              <th data-align="right" data-formatter="number_formatter">賣(張)</th>
+              <th data-align="right" data-formatter="number_formatter">價格</th>
+              <th data-align="right" data-visible="false" data-formatter="number_formatter">調整成本均價</th>
+              <th data-align="right" data-visible="false" data-formatter="number_formatter">手續費</th>
+              <th data-align="right" data-visible="false" data-formatter="number_formatter">交易稅</th>
+              <th data-align="right" data-visible="false" data-formatter="number_formatter">交易成本</th>
+              <th data-align="right" data-visible="false" data-formatter="number_formatter">價金</th>
+              <th data-align="right" data-formatter="number_formatter">支出</th>
+              <th data-align="right" data-formatter="number_formatter">收入</th>
+              <th data-align="right" data-formatter="number_formatter">持有成本</th>
+              <th data-align="right" data-formatter="colorformat">已實現損益</th>
+              <th data-align="right" data-formatter="colorformat_per">獲益率</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for index, row in data[1].iterrows() %}
+            <tr> 
+              <td>{{row['date']}}</td>
+              <td>{{row['sub_account']}}</td>
+              <td>{{row['code']}}</td>
+              <td>{{row['name']}}</td>
+              <td>{{row['is_day_trade']}}</td>
+              <td>{{row['type']}}</td>
+              <td>{{row['buy']}}</td>
+              <td>{{row['sell']}}</td>
+              <td>{{row['price']}}</td>
+              <td>{{row['adjusted_buy_cost']}}</td>
+              <td>{{row['discounted_fee']}}</td>
+              <td>{{row['tax']}}</td>
+              <td>{{row['transaction_cost']}}</td>
+              <td>{{row['deal']}}</td>
+              <td>{{row['expense']}}</td>
+              <td>{{row['income']}}</td>
+              <td>{{row['holding_cost']}}</td>
+              <td>{{row['realized_gain']}}</td>                      
+              <td>{{row['rate_of_return']}}</td>
+            </tr>
+          {% endfor %}
+        </tbody>      
+        </table>
+      </div>
+    </div>
+    {% for acc, df in data[0].items() %}
+    <div class="tab-pane fade" id="{{ acc }}" role="tabpanel" aria-labelledby="separate-tab">
+      <div class="table-responsive">
+        <table class="table table-striped" 
+              data-toggle="table" 
+              data-pagination="true"
+              data-search="true"
+              data-search-align="left"
+              data-show-columns="true">
+          <thead>
+            <tr>
+              <th data-searchable="true" data-sortable="true">日期</th>
+              <th data-searchable="true" data-sortable="true">代碼</th>
+              <th data-searchable="true">公司名稱</th>
+              <th data-align="right">當沖</th>
+              <th data-searchable="true" data-visible="false">類型</th>
+              <th data-align="right" data-formatter="number_formatter">買(張)</th>
+              <th data-align="right" data-formatter="number_formatter">賣(張)</th>
+              <th data-align="right" data-formatter="number_formatter">價格</th>
+              <th data-align="right" data-visible="false" data-formatter="number_formatter">調整成本均價</th>
+              <th data-align="right" data-visible="false" data-formatter="number_formatter">手續費</th>
+              <th data-align="right" data-visible="false" data-formatter="number_formatter">交易稅</th>
+              <th data-align="right" data-visible="false" data-formatter="number_formatter">交易成本</th>
+              <th data-align="right" data-visible="false" data-formatter="number_formatter">價金</th>
+              <th data-align="right" data-formatter="number_formatter">支出</th>
+              <th data-align="right" data-formatter="number_formatter">收入</th>
+              <th data-align="right" data-formatter="number_formatter">持有成本</th>
+              <th data-align="right" data-formatter="colorformat">已實現損益</th>
+              <th data-align="right" data-formatter="colorformat_per">獲益率</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for index, row in df.iterrows() %}
+          <tr> 
+            <td>{{row['date']}}</td>
+            <td>{{row['code']}}</td>
+            <td>{{row['name']}}</td>
+            <td>{{row['is_day_trade']}}</td>
+            <td>{{row['type']}}</td>
+            <td>{{row['buy']}}</td>
+            <td>{{row['sell']}}</td>
+            <td>{{row['price']}}</td>
+            <td>{{row['adjusted_buy_cost']}}</td>
+            <td>{{row['discounted_fee']}}</td>
+            <td>{{row['tax']}}</td>
+            <td>{{row['transaction_cost']}}</td>
+            <td>{{row['deal']}}</td>
+            <td>{{row['expense']}}</td>
+            <td>{{row['income']}}</td>
+            <td>{{row['holding_cost']}}</td>
+            <td>{{row['realized_gain']}}</td>                      
+            <td>{{row['rate_of_return']}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>      
+        </table>
+      </div>      
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="container">
+  <h2 class="text-dark mt-5 mb-4">其他功能</h2>
+  <hr>
+  <div class="row mb-5">
+    <form class="col-md-3 mb-4" method="POST" id="delete-form" autocomplete="off" style="min-width: 20em;">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="fw-bold">刪除紀錄</h5>
+          <hr>
+          <div class="mt-3 mb-2">
+            <label class="d-inline">取消近</label>
+            <input type="text" 
+                   class="form-control d-inline w-25" 
+                   id="delete_number" name="delete_number" 
+                   value="1" onchange="delete_input_onchange()">
+            <p class="d-inline">筆紀錄</p>
+            {% if records|length >= 2 %}
+            <button type="button" 
+                    class="btn btn-color d-inline shadow" 
+                    id="delete_button" name="delete_button" 
+                    data-bs-toggle="modal" 
+                    href="#delete_modal" 
+                    value="delete_button">刪除</button>
+            {% else %}
+            <button type="button" 
+                    class="btn btn-color d-inline shadow" 
+                    id="delete_button" name="delete_button" 
+                    data-bs-toggle="modal"
+                    value="delete_button" disabled>刪除</button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="delete_modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content w-75">
+            <div class="modal-header">
+              <h5 class="modal-title">刪除最近 <span id="num_to_delete"></span> 筆資料</h5>
+              <button type="button" class="btn-close"  data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+              <p><span id="row_text"></span></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
+              <button type="submit" class="btn btn-color"  id='delete_button_modal' name="delete_button_modal" value="delete_button_modal">刪除</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>  
+
+    <div class="col-md-3 mb-4" style="min-width: 20em;">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="fw-bold">下載交易紀錄</h5>
+          <hr>
+          <div class="mt-3 mb-2">
+            <a type="button" class="btn btn-color w-50 shadow" name="dl_sheet" id="dl_sheet" href="/download-sheet">下載 .xlsx 檔</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+
+
+{% block script %}
+<script>
+  
+// prevent re-submitting form when refresh or hit previous page
+if ( window.history.replaceState ) {
+    window.history.replaceState( null, null, window.location.href );
+}
+
+// generate modal text, or change btn type to submit when the input is illegal
+var number = document.getElementById('delete_number').value;
+document.getElementById("num_to_delete").innerText = number;  
+const data = '{{ records | tojson }}';
+const records = JSON.parse(data);
+var delete_button = document.getElementById('delete_button');
+document.getElementById("row_text").innerText = create_text(Number(number)-1);
+
+
+// create modal msg based on deletion number input
+function create_text(delete_input) {
+
+  let return_text = '確認移除含「' + records[delete_input] + '」以後的記錄?';  
+  return return_text;
+}
+
+// detect input field on change
+function delete_input_onchange() {
+    
+  var number = document.getElementById('delete_number').value;
+  document.getElementById("num_to_delete").innerText = number;  
+
+  if (isNaN(number)) {
+    // not a number
+    // submit form to catch error
+    delete_button.removeAttribute('data-bs-toggle');
+    delete_button.removeAttribute('href');
+    delete_button.setAttribute('type', 'submit');
+  } else {
+    // is a number
+    if (Number(number) < records.length && Number(number) != 0) {        
+      delete_button.setAttribute('type', 'button');        
+      delete_button.setAttribute('href', '#delete_modal');
+      delete_button.setAttribute('data-bs-toggle', 'modal');            
+      
+      document.getElementById("row_text").innerText = create_text(Number(number)-1);
+    } else {
+      // not enough rows
+      // submit form to catch error
+      delete_button.removeAttribute('data-bs-toggle');
+      delete_button.removeAttribute('href');
+      delete_button.setAttribute('type', 'submit');
+    }  
+  }
+}
+
+// prevent deletion being executed by hitting enter
+document.getElementById("delete-form").onkeypress = function(e) {
+  var key = e.charCode || e.keyCode || 0;     
+  if (key == 13) {
+    e.preventDefault();
+  }
+}
+
+// below are the formatters
+
+function number_formatter(value) {
+    return Number(value).toLocaleString()
+}
+
+function colorformat(value) {
+  let color;
+  if (value > 0) {
+    color = '#ff0000'
+  } else if (value < 0) {
+    color = '#29ab0c'
+  } else {
+    color = '#000000'
+  }    
+  return '<div style="color: ' + color + '">' + Number(value).toLocaleString() + '</div>'
+}
+
+function colorformat_per(value) {
+  let color;
+  if (value > 0) {
+    color = '#ff0000'
+  } else if (value < 0) {
+    color = '#29ab0c'
+  } else {
+    color = '#000000'
+  }
+    
+  return '<div style="color: ' + color + '">' +
+      value + '%'
+      '</div>'
+}
+</script>
+{% endblock %}
