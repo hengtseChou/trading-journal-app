@@ -1,4 +1,5 @@
 __pycache__/
+creds
 log/
 clean.py
 t.py
